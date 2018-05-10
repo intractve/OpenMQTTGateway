@@ -30,31 +30,34 @@
 */
 /*-------------------VERSION----------------------*/
 #define OMG_VERSION "0.7"
-/*-------------DEFINE YOUR NETWORK PARAMETERS BELOW----------------*/
+/*-------------DEFINE YOUR MQTT PARAMETERS BELOW----------------*/
 //MQTT Parameters definition
 //#define mqtt_server_name "www.mqtt_broker.com" // instead of defining the server by its IP you can define it by its name, uncomment this line and set the correct MQTT server host name
 char mqtt_user[20] = "your_username"; // not compulsory only if your broker needs authentication
 char mqtt_pass[20] = "your_password"; // not compulsory only if your broker needs authentication
 char mqtt_server[40] = "192.168.1.17";
 char mqtt_port[6] = "1883";
-#define Gateway_Name "/OpenMQTTGateway"
-#define Base_Topic "home"
-#define WifiManager_password "your_password"
+
+#define Gateway_Name "OpenMQTTGateway"
+#define Base_Topic "home/"
 #define version_Topic  Base_Topic Gateway_Name "/version"
 #define will_Topic  Base_Topic Gateway_Name "/LWT"
 #define will_QoS 0
 #define will_Retain true
 #define will_Message "Offline"
 #define Gateway_AnnouncementMsg "Online"
-#define MDNS_SD //comment if you don't want to use mdns for discovering automatically your ip server
-
-//set minimu quality of signal so it ignores AP's under that quality
-#define MinimumWifiSignalQuality 8
-//#define ESPWifiManualSetup true //uncomment you don't want to use wifimanager for your credential settings on ESP
 
 /*-------------DEFINE YOUR NETWORK PARAMETERS BELOW----------------*/
+
+//#define ESPWifiManualSetup true //uncomment you don't want to use wifimanager for your credential settings on ESP
+#define WifiManager_password "your_password"
+//#define MDNS_SD //comment if you don't want to use mdns for discovering automatically your ip server, please note that MDNS with ESP32 can cause the BLE to not work
+
+//set minimum quality of signal so it ignores AP's under that quality
+#define MinimumWifiSignalQuality 8
+
 // Update these with values suitable for your network.
-#ifdef ESP32 // for nodemcu, wemos, esp32 and esp8266
+#if defined(ESP32) || defined(ESPWifiManualSetup) // for nodemcu, weemos and esp8266
   #define wifi_ssid "wifi ssid"
   #define wifi_password "wifi password"
 #else // for arduino + W5100
@@ -87,6 +90,7 @@ const byte subnet[] = { 255, 255, 255, 0 }; //ip adress
   #define ZgatewayRF2
   #define ZgatewayIR
   #define ZgatewayBT
+  #define Zgateway2G
   #define ZactuatorONOFF
   #define ZsensorINA226
   #define ZsensorHCSR501
@@ -99,6 +103,7 @@ const byte subnet[] = { 255, 255, 255, 0 }; //ip adress
 #elif ESP32
   #define ZgatewayRF
   #define ZgatewayRF2
+  //#define Zgateway2G (not tested yet)
   //#define ZgatewayIR
   #define ZgatewayBT
   #define ZactuatorONOFF
@@ -111,6 +116,7 @@ const byte subnet[] = { 255, 255, 255, 0 }; //ip adress
   //#define ZgatewayRFM69 // If you uncomment this you can't use RF and BT due to the fact that RF use also D8 and BT use also D6/D7
 #else // for arduino mega + W5100
   #define ZgatewayRF
+  //#define Zgateway2G  (not tested yet)
   //#define ZgatewayRF2 // too big for UNO
   //#define ZgatewayRFM69 not tested
   //#define ZgatewayIR
@@ -139,8 +145,9 @@ const byte subnet[] = { 255, 255, 255, 0 }; //ip adress
 //variables to avoid duplicates
 #define time_avoid_duplicate 3000 // if you want to avoid duplicate mqtt message received set this to > 0, the value is the time in milliseconds during which we don't publish duplicates
 
-//uncomment to use multicore function of ESP32 for BLE
-#define multiCore
+#ifdef ESP32
+  //#define multiCore //uncomment to use multicore function of ESP32 for BLE
+#endif
 
 #define TimeBetweenReadingSYS 30000 // time between system readings (like memory)
 /*-------------------ACTIVATE TRACES----------------------*/
